@@ -44,6 +44,14 @@ x-snuba-defaults: &snuba_defaults
     UWSGI_IGNORE_WRITE_ERRORS: 'true'
     UWSGI_DISABLE_WRITE_EXCEPTION:  'true'
 services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+        - '80:80'
+        - '443:443'
+    volumes:
+        - './nginx.conf:/etc/nginx/nginx.conf'
   smtp:
     << : *restart_policy
     image: tianon/exim4
