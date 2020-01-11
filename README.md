@@ -4,26 +4,14 @@ Sentry on virheidenhallintatyökalu. Sentrystä on olemassa avoin versio (https:
 
 ---
 
-## Konfigurointi
-
-[.env](./.env) tiedosto sisältää muuttujia jotka on konfiguroitava ennen deploymenttiä.
-
-```
-COMPOSE_PROJECT_NAME=sentry_onpremise
-SENTRY_EVENT_RETENTION_DAYS=365
-
-# Custom configuration
-DB_USER=sentry@prodeko-postgres
-DB_PASSWORD=replace-this-in-prod
-POSTGRESQL_SSL_CA=/path/to/BaltimoreCyberTrustRoot.crt.pem
-```
-
 ## Käyttöönotto
 
 1. Asenna Docker ja Docker Compose
 2. Poista sentry/ kansion tiedostojen nimistä .example.
 3. Hanki SSL-sertifikaatit. Sertifikaattien tulee olla host-koneen kansiossa /etc/nginx/certs.
-4. Konfiguroi environment muuttujat (`source .env`)
+4. Konfiguroi citext lisäosa Azuren Postgresiin. Kirjaudu ensin sisään psql avulla ja aja `\c sentry` ja `CREATE EXTENSION IF NOT EXISTS citext;`.
+   - Ohjeet tietokantayhteyden muodostamiseen: https://github.com/Prodeko/infrastructure/tree/master/modules/db
+   - Saatavilla olevat lisäosat: https://docs.microsoft.com/en-us/azure/postgresql/concepts-extensions
 5. Aja `./install.sh`
 6. Aja `docker-compose up -d`
 7. Aja `docker-compose restart nginx` (tarvittaessa)

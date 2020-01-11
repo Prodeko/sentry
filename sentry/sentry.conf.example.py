@@ -1,6 +1,7 @@
 # This file is just Python, with a touch of Django which means
 # you can inherit and tweak settings to your hearts content.
 
+import os
 from sentry.conf.server import *  # NOQA
 
 # Original database config
@@ -26,7 +27,6 @@ DATABASES = {
         "PORT": "5432",
         "OPTIONS": {
             "sslmode": "verify-ca",
-            "sslrootcert": os.environ.get("POSTGRESQL_SSL_CA"),
         },
     }
 }

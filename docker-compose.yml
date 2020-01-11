@@ -20,8 +20,11 @@ x-sentry-defaults: &sentry_defaults
     - kafka
   environment:
     SNUBA: 'http://snuba-api:1218'
+    DB_USER: 'user_sentry@prodeko-postgres'
+    DB_PASSWORD: 'replace-this-in-prod'
   volumes:
     - 'sentry-data:/data'
+    - './ca-certs:/home/sentry/.postgresql'
 x-snuba-defaults: &snuba_defaults
   << : *restart_policy
   depends_on:
