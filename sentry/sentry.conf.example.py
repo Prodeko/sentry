@@ -3,14 +3,31 @@
 
 from sentry.conf.server import *  # NOQA
 
+# Original database config
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "sentry.db.postgres",
+#         "NAME": "postgres",
+#         "USER": "postgres",
+#         "PASSWORD": "",
+#         "HOST": "postgres",
+#         "PORT": "",
+#     }
+# }
+
+# Database config for Azure PostgreSQL
 DATABASES = {
     "default": {
         "ENGINE": "sentry.db.postgres",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "",
-        "HOST": "postgres",
-        "PORT": "",
+        "NAME": "sentry",
+        "USER": os.environ.get("DB_USER"),
+        "PASSWORD": os.environ.get("DB_PASSWORD"),
+        "HOST": "prodeko-postgres.postgres.database.azure.com",
+        "PORT": "5432",
+        "OPTIONS": {
+            "sslmode": "verify-ca",
+            "sslrootcert": "/var/www/sentry.prodeko.org/sentry/ca-certs/BaltimoreCyberTrustRoot.crt.pem",
+        },
     }
 }
 
