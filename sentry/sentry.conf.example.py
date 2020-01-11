@@ -26,7 +26,7 @@ DATABASES = {
         "PORT": "5432",
         "OPTIONS": {
             "sslmode": "verify-ca",
-            "sslrootcert": "/var/www/sentry.prodeko.org/sentry/ca-certs/BaltimoreCyberTrustRoot.crt.pem",
+            "sslrootcert": os.environ.get("POSTGRESQL_SSL_CA"),
         },
     }
 }
