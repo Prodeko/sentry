@@ -23,11 +23,11 @@ POSTGRESQL_SSL_CA=/path/to/BaltimoreCyberTrustRoot.crt.pem
 1. Asenna Docker ja Docker Compose
 2. Poista sentry/ kansion tiedostojen nimistä .example.
 3. Hanki SSL-sertifikaatit. Sertifikaattien tulee olla host-koneen kansiossa /etc/nginx/certs.
-
-```
-$ ./install.sh
-$ docker-compose up -d
-$ docker-compose restart nginx (tarvittaessa)
-```
+4. Konfiguroi environment muuttujat (`source .env`)
+5. Aja `./install.sh`
+6. Aja `docker-compose up -d`
+7. Aja `docker-compose restart nginx` (tarvittaessa)
 
 Jos nginx service on päällä host-koneessa, nginx container ei pysty yhdistämään portteihin 80 tai 443. Tässä tapauksessa aja `systemctl disable nginx && systemctl stop nginx`
+
+Ajamalla `docker-compose down` containerit saa suljettua.
