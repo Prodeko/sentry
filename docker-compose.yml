@@ -12,7 +12,7 @@ x-sentry-defaults: &sentry_defaults
     - redis
     # - postgres
     - memcached
-    - smtp
+    # - smtp
     - snuba-api
     - snuba-consumer
     - snuba-replacer
@@ -55,12 +55,12 @@ services:
     volumes:
       - './nginx.conf:/etc/nginx/nginx.conf'
       - '/etc/nginx/certs:/etc/nginx/certs'
-  smtp:
-    << : *restart_policy
-    image: tianon/exim4
-    volumes:
-      - 'sentry-smtp:/var/spool/exim4'
-      - 'sentry-smtp-log:/var/log/exim4'
+#   smtp:
+#     << : *restart_policy
+#     image: tianon/exim4
+#     volumes:
+#       - 'sentry-smtp:/var/spool/exim4'
+#       - 'sentry-smtp-log:/var/log/exim4'
   memcached:
     << : *restart_policy
     image: 'memcached:1.5-alpine'
@@ -181,7 +181,7 @@ volumes:
   sentry-symbolicator:
     external: true
   sentry-secrets:
-  sentry-smtp:
+#   sentry-smtp:
   sentry-zookeeper-log:
   sentry-kafka-log:
-  sentry-smtp-log:
+#   sentry-smtp-log:
