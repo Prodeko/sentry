@@ -46,13 +46,13 @@ x-snuba-defaults: &snuba_defaults
 services:
   nginx:
     image: nginx:alpine
-    container_name: nginx
     ports:
       - '80:80'
       - '443:443'
     volumes:
       - './nginx.conf:/etc/nginx/nginx.conf'
-      - '/etc/nginx/certs/:etc/nginx/certs/'
+      - '/etc/nginx/certs/fullchain.pem:etc/nginx/certs/fullchain.pem'
+      - '/etc/nginx/certs/privkey.pem:etc/nginx/certs/privkey.pem'
   smtp:
     << : *restart_policy
     image: tianon/exim4
