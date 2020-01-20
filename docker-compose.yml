@@ -49,6 +49,8 @@ x-snuba-defaults: &snuba_defaults
 services:
   nginx:
     image: nginx:alpine
+    depends_on:
+      - web
     ports:
       - '80:80'
       - '443:443'
