@@ -9,7 +9,7 @@ log_file="sentry_install_log-`date +'%Y-%m-%d_%H-%M-%S'`.txt"
 exec &> >(tee -a "$log_file")
 
 MIN_DOCKER_VERSION='17.05.0'
-MIN_COMPOSE_VERSION='1.19.0'
+MIN_COMPOSE_VERSION='1.23.0'
 MIN_RAM=2400 # MB
 
 SENTRY_CONFIG_PY='sentry/sentry.conf.py'
@@ -49,17 +49,24 @@ function ensure_file_from_example {
 
 if [ $(ver $DOCKER_VERSION) -lt $(ver $MIN_DOCKER_VERSION) ]; then
     echo "FAIL: Expected minimum Docker version to be $MIN_DOCKER_VERSION but found $DOCKER_VERSION"
-    exit -1
+    exit 1
 fi
 
 if [ $(ver $COMPOSE_VERSION) -lt $(ver $MIN_COMPOSE_VERSION) ]; then
     echo "FAIL: Expected minimum docker-compose version to be $MIN_COMPOSE_VERSION but found $COMPOSE_VERSION"
-    exit -1
+    exit 1
 fi
 
 if [ "$RAM_AVAILABLE_IN_DOCKER" -lt "$MIN_RAM" ]; then
     echo "FAIL: Expected minimum RAM available to Docker to be $MIN_RAM MB but found $RAM_AVAILABLE_IN_DOCKER MB"
-    exit -1
+    exit 1
+fi
+
+#SSE4.2 required by Clickhouse (https://clickhouse.yandex/docs/en/operations/requirements/) 
+SUPPORTS_SSE42=$(docker run --rm busybox grep -c sse4_2 /proc/cpuinfo || :);
+if (($SUPPORTS_SSE42 == 0)); then
+    echo "FAIL: The CPU your machine is running on does not support the SSE 4.2 instruction set, which is required for one of the services Sentry uses (Clickhouse). See https://git.io/JvLDt for more info."
+    exit 1
 fi
 
 # Clean up old stuff and ensure nothing is working while we install/update
@@ -104,13 +111,10 @@ echo ""
 echo "Docker images built."
 
 echo "Bootstrapping Snuba..."
-$dc up -d kafka redis clickhouse
-until $($dcr clickhouse clickhouse-client -h clickhouse --query="SHOW TABLES;" | grep -q sentry_local); do
-  # `bootstrap` is for fresh installs, and `migrate` is for existing installs
-  # Running them both for both cases is harmless so we blindly run them
-  $dcr snuba-api bootstrap --force || true;
-  $dcr snuba-api migrate || true;
-done;
+# `bootstrap` is for fresh installs, and `migrate` is for existing installs
+# Running them both for both cases is harmless so we blindly run them
+$dcr snuba-api bootstrap --force
+$dcr snuba-api migrate
 echo ""
 
 # Very naively check whether there's an existing sentry-postgres volume and the PG version in it
