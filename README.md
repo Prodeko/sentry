@@ -1,6 +1,6 @@
 # Sentry :bug::mag:
 
-Sentry on virheidenhallintatyökalu. Sentrystä on olemassa avoin versio (https://github.com/getsentry/onpremise), josta tämä repo on forkattu. Lue alkuperäinen [readme](./readme_original.md). Alkuperäisestä projektista poiketen tämä repo on konfiguroitu käyttämään Azuren PostgreSQL palvelua.
+Sentry on virheidenhallintatyökalu. Sentrystä on olemassa avoin versio (https://github.com/getsentry/onpremise), josta tämä repo on forkattu. Lue alkuperäinen [README](https://github.com/getsentry/onpremise/blob/master/README.md). Alkuperäisestä projektista poiketen tämä repo on konfiguroitu käyttämään Azuren PostgreSQL palvelua.
 
 ---
 
