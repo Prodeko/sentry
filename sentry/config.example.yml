@@ -8,7 +8,7 @@
 ###############
 
 # mail.backend: 'smtp'  # Use dummy if you want to disable email entirely
-mail.host: 'smtp.sendgrid.net'
+mail.host: 'smtp.sendgrid.com'
 mail.port: 587
 mail.username: 'apikey'
 mail.password: 'replace-this-in-prod'
