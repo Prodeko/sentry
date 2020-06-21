@@ -219,5 +219,6 @@ volumes:
   # sentry-smtp-log:
   sentry-clickhouse-log:
 networks:
-  prodeko-docker-net:
-    driver: bridge
+  default:
+    external:
+      name: prodeko-docker-net
