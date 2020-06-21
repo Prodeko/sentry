@@ -218,3 +218,6 @@ volumes:
   sentry-kafka-log:
   # sentry-smtp-log:
   sentry-clickhouse-log:
+networks:
+  prodeko-docker-net:
+    driver: bridge
