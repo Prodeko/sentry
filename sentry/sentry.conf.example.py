@@ -1,6 +1,8 @@
 # This file is just Python, with a touch of Django which means
 # you can inherit and tweak settings to your hearts content.
 
+import os
+
 from sentry.conf.server import *  # NOQA
 
 
@@ -33,14 +35,30 @@ def get_internal_network():
 INTERNAL_SYSTEM_IPS = (get_internal_network(),)
 
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "sentry.db.postgres",
+#         "NAME": "postgres",
+#         "USER": "postgres",
+#         "PASSWORD": "",
+#         "HOST": "postgres",
+#         "PORT": "",
+#     }
+# }
+
+# Database config for Azure PostgreSQL
 DATABASES = {
     "default": {
         "ENGINE": "sentry.db.postgres",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "",
-        "HOST": "postgres",
-        "PORT": "",
+        "NAME": "sentry",
+        "USER": os.environ.get("DB_USER"),
+        "PASSWORD": os.environ.get("DB_PASSWORD"),
+        "HOST": "prodeko-postgres.postgres.database.azure.com",
+        "PORT": "5432",
+        "OPTIONS": {
+            "sslmode": "require",
+            "sslrootcert": os.environ.get("POSTGRESQL_SSL_CA", ""),
+        },
     }
 }
 
