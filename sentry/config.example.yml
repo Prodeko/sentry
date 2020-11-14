@@ -76,7 +76,7 @@ transaction-events.force-disable-internal-project: true
 # GitHub Integration #
 ######################
 
-github-app.extended-permissions: ["repo"]
+# github-app.extended-permissions: ["repo"]
 github-app.id: 88647
 github-app.name: "Prodeko Sentry"
 # Below will be replaced by Ansible
