@@ -188,7 +188,7 @@ services:
     command: run cron
   worker:
     <<: *sentry_defaults
-    command: run worker -c 3
+    command: run worker
   ingest-consumer:
     <<: *sentry_defaults
     command: run ingest-consumer --all-consumer-types
