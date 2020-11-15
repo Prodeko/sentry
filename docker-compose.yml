@@ -58,6 +58,7 @@ services:
     image: "memcached:1.5-alpine"
   redis:
     <<: *restart_policy
+    container_name: "sentry_redis"
     image: "redis:5.0-alpine"
     volumes:
       - "sentry-redis:/data"
@@ -212,6 +213,7 @@ services:
     command: '"0 0 * * * gosu sentry sentry cleanup --days $SENTRY_EVENT_RETENTION_DAYS"'
   nginx:
     <<: *restart_policy
+    container_name: "sentry_nginx"
     ports:
       - "$SENTRY_BIND:80/tcp"
     image: "nginx:1.16"
