@@ -7,7 +7,7 @@ x-sentry-defaults: &sentry_defaults
     context: ./sentry
     args:
       - SENTRY_IMAGE
-      - SENTRY_PYTHON3
+      - SENTRY_PYTHON2
   image: sentry-onpremise-local
   depends_on:
     - redis
@@ -28,10 +28,13 @@ x-sentry-defaults: &sentry_defaults
     DB_USER: user_sentry@prodeko-postgres
     DB_PASSWORD: replace-in-prod
     POSTGRESQL_SSL_CA: /ca-certs/CombinedCa.crt.pem
+    # Leaving the value empty to just pass whatever is set
+    # on the host system (or in the .env file)
+    SENTRY_EVENT_RETENTION_DAYS:
   volumes:
     - "sentry-data:/data"
     - "./sentry:/etc/sentry"
-    - "./ca-certs:/ca-certs"
+    - "./geoip:/geoip:ro"
 x-snuba-defaults: &snuba_defaults
   <<: *restart_policy
   depends_on:
@@ -46,6 +49,9 @@ x-snuba-defaults: &snuba_defaults
     REDIS_HOST: redis
     UWSGI_MAX_REQUESTS: "10000"
     UWSGI_DISABLE_LOGGING: "true"
+    # Leaving the value empty to just pass whatever is set
+    # on the host system (or in the .env file)
+    SENTRY_EVENT_RETENTION_DAYS:
 services:
   # smtp:
   #   << : *restart_policy
@@ -125,6 +131,15 @@ services:
       # If you have high volume and your search return incomplete results
       # You might want to change this to a higher value (and ensure your host has enough memory)
       MAX_MEMORY_USAGE_RATIO: 0.3
+  geoipupdate:
+    image: "maxmindinc/geoipupdate:latest"
+    # Override the entrypoint in order to avoid using envvars for config.
+    # Futz with settings so we can keep mmdb and conf in same dir on host
+    # (image looks for them in separate dirs by default).
+    entrypoint:
+      ["/usr/bin/geoipupdate", "-d", "/sentry", "-f", "/sentry/GeoIP.conf"]
+    volumes:
+      - "./geoip:/sentry"
   snuba-api:
     <<: *snuba_defaults
   # Kafka consumer responsible for feeding events into Clickhouse
@@ -144,7 +159,7 @@ services:
   # Kafka consumer responsible for feeding transactions data into Clickhouse
   snuba-transactions-consumer:
     <<: *snuba_defaults
-    command: consumer --storage transactions --consumer-group transactions_group --auto-offset-reset=latest --max-batch-time-ms 750
+    command: consumer --storage transactions --consumer-group transactions_group --auto-offset-reset=latest --max-batch-time-ms 750 --commit-log-topic=snuba-commit-log
   snuba-replacer:
     <<: *snuba_defaults
     command: replacer --storage events --auto-offset-reset=latest --max-batch-size 3
@@ -153,7 +168,7 @@ services:
     command: subscriptions --auto-offset-reset=latest --consumer-group=snuba-events-subscriptions-consumers --topic=events --result-topic=events-subscription-results --dataset=events --commit-log-topic=snuba-commit-log --commit-log-group=snuba-consumers --delay-seconds=60 --schedule-ttl=60
   snuba-subscription-consumer-transactions:
     <<: *snuba_defaults
-    command: subscriptions --auto-offset-reset=latest --consumer-group=snuba-transactions-subscriptions-consumers --topic=events --result-topic=transactions-subscription-results --dataset=transactions --commit-log-topic=snuba-commit-log --commit-log-group=snuba-transactions-consumers --delay-seconds=60 --schedule-ttl=60
+    command: subscriptions --auto-offset-reset=latest --consumer-group=snuba-transactions-subscriptions-consumers --topic=events --result-topic=transactions-subscription-results --dataset=transactions --commit-log-topic=snuba-commit-log --commit-log-group=transactions_group --delay-seconds=60 --schedule-ttl=60
   snuba-cleanup:
     <<: *snuba_defaults
     image: snuba-cleanup-onpremise-local
@@ -233,6 +248,10 @@ services:
         read_only: true
         source: ./relay
         target: /work/.relay
+      - type: bind
+        read_only: true
+        source: ./geoip
+        target: /geoip
     depends_on:
       - kafka
       - redis
