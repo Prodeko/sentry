@@ -6,14 +6,16 @@ Sentry on virheidenhallintatyökalu, josta on olemassa open-source self-hosted v
 
 ## Käyttöönotto
 
-1. Aja infrastructure repossa [https://github.com/Prodeko/infrastructure/tree/master/ansible](https://github.com/Prodeko/infrastructure/tree/master/ansible) komento `ansible-playbook playbook.yml --extra-vars '@passwd.yml' --tags sentry`.
+[Github Actions](./.github/workflows/deploy.yml) pipeline päivittää Sentryn automaattisesti kun master branch päivittyy.
 
 ## Upstream synkronointi
 
 ```
 $ git fetch upstream
 $ git merge upstream/master
-# Fix possible merge conflicts
+# Korjaa merge kofliktit
+# .github folderin tulee sisältää ainoastaan .github/workflows/deploy.yml
+# sekä .github/workflows/deloy/action.yml tiedostot.
 ```
 
 Synkronoinnin jälkeen tarkista seuraavat asiat:
