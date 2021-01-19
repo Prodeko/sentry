@@ -8,6 +8,10 @@ Sentry on virheidenhallintatyökalu, josta on olemassa open-source self-hosted v
 
 [Github Actions](./.github/workflows/deploy.yml) pipeline päivittää Sentryn automaattisesti kun master branch päivittyy.
 
+### Manuaalisesti
+
+Aja infrastructure reposta `ansible-playbook playbook.yml --extra-vars '@passwd.yml' --tags sentry`.
+
 ## Upstream synkronointi
 
 ```
